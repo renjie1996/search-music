@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+  <title>QQ音乐-搜索</title>
+  <style>
+    body,
+    div,
+    dl,
+    dt,
+    dd,
+    ul,
+    ol,
+    lo,
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6,
+    pre,
+    code,
+    form,
+    fieldiset,
+    legend,
+    input,
+    textarea,
+    p,
+    blockquote,
+    th,
+    td {
+      margin: 0;
+      padding: 0;
+    }
+    
+    a {
+      text-decoration: none;
+    }
+    
+    body {
+      /*字体大小与行高一同设置*/
+      font: 12px/1.5 "hiragino sans gb", arial;
+      color: #555;
+      background-color: #fff;
+      -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+      -webkit-user-select: none;
+    }
+    
+    body.search_page {
+      background: #fff;
+    }
+    
+    .wrap {
+      width: 100%;
+      overflow: hidden;
+    }
+    
+    .mod_header {
+      position: relative;
+      height: 44px;
+      background: #31c27c;
+    }
+    
+    .mod_header .music_logo {
+      float: left;
+      display: block;
+      width: 90px;
+      height: 25px;
+      margin: 9px 0 10px;
+      background-image: url(https://y.gtimg.cn/mediastyle/mobile/yqq_v5/img/logo.png?max_age=19830212&d=20151105145423);
+      background-size: cover;
+      background-repeat: no-repeat;
+      text-indent: -99999px;
+    }
+    
+    .mod_header .btn_download {
+      position: absolute;
+      display: inline-block;
+      right: 10px;
+      top: 8px;
+      line-height: 28px;
+      -webkit-border-radius: 99px;
+      -moz-border-radius: 99px;
+      border-radius: 99px;
+      font-size: 14px;
+      background-color: #149c5a;
+      color: #fff;
+      height: 28px;
+      padding: 0 12px;
+    }
+    /*mod-nav样式*/
+    
+    .mod_nav {
+      display: -webkit-box;
+      display: -webkit-flex;
+      display: flex;
+      background-color: #fff;
+
+      /*??????????????????????????????*/
+      position: relative;
+    }
+    
+    .mod_nav a {
+      -webkit-box-flex: 1;
+      -webkit-flex: 1;
+      flex: 1;
+      position: relative;
+      display: block;
+      height: 40px;
+      line-height: 40px;
+      text-align: center;
+      color: rgba(0, 0, 0, .6);
+      font-size: 16px;
+      overflow: hidden;
+      -webkit-box-sizing: border-box;
+    }
+
+    .mod_nav a.current {
+      color: #31c27c;
+    }
+
+
+    
+    /*.mod_nav a.current:after {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+      content: '';
+      background-color: #31c27c;
+    }*/
+
+    .mod_nav:after {
+        position: absolute;
+        bottom: 0;
+        width:33.33333333%;
+        height: 2px;
+        content:'';
+        background:#31c27c;
+        transition:left .3s ease-in-out;
+    }
+    .mod_nav.search_current:after {
+        left:66.66666666%;
+    }
+    .mod_nav.toplist_current:after {
+        left:33.33333333%;
+    }
+    .mod_nav.recom_current:after {
+        left:0;
+    }
+
+    /*.scroll {
+      height: 3px;
+      background-color: #31c27c;
+      width: 33.333333%;
+      transition: .3s ease-in-out;
+      transform: translateX(100%);
+    }*/
+
+    .mod_search_bar {
+        background:#f4f4f4;
+        padding:10px; 
+        display:-webkit-box;
+        display:-webkit-flex;
+        display:flex;
+        -webkit-box-orient:horizontal;
+        flex-direction: row;
+        -webkit-align-items: center;
+        align-items: center;
+    }
+    .mod_search_bar .search_bar_cont {
+        position: relative;
+        -webkit-border-radius: 3px;
+        -moz-border-radius: 3px;
+        border-radius: 3px;
+        background:#fff;
+        height: 20px;
+        padding:8px 12px 8px 35px;
+        -webkit-box-flex:1;
+        -webkit-flex:1;
+        flex:1;
+    }
+    .mod_search_bar .search_bar_tip_text {
+      font-size: 14px;
+      height: 36px;
+      line-height: 36px;
+      padding-left: 10px;
+      padding-right: 10px;
+    }
+
+    /*tip 记得做笔记*/ 
+    .mod_search_bar .icon_delete,.mod_search_bar .search_bar_tip_text {
+      display: none;
+    }
+
+    .mod_search_bar .search_input {
+      height: 20px;
+      line-height: 20px;
+      width: 100%;
+      color: rgba(0,0,0,.3);
+      border: none;
+      font-size: 14px; 
+      outline: none;
+      -webkit-appearance: textfield;
+    }
+
+    .mod_search_bar .icon_search {
+      position: absolute;
+      top: 9px;
+      left: 10px;
+      width: 18px;
+      height: 18px;
+      background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACQAAAAkCAYAAADhAJiYAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAJlSURBVFhH7ZfRShRRHMb3Jkqzm7wJSrqIIDBxX6C0a62H6C7oqq4ixYreQMmMHkXbjLQeIYgyQuqiyIuotKDt923fyLCszv/MzF5EDnzs2T3/7zffOXNm5myjcXDUOAOtVquJ7qOn6AP6ZamtQ33NGk/ZG8VJJtEaagf1XJ7agwEdRI9zIT7RnkdT6Iz7VaO2flPf51z9I9oDtQQDNIxeGv6Nz9voaBFcNa79bu8LsYp8+/Z75FmYN3w/nwqUB204lFiDqYzd+txlek37RFkQ3pNIjDZaKsXBeMkATfloKUjOBGMMifUbXUzmYVp3oFvJ5j0M8GbNXEtiYtJzRtOru6lwAUfhsIZQdveNR30NTPccaD5sChbCXTD7btDSUCAdmqGpsClYCHPa7CdBSyeQXgEKNBI2BQthnjX7Y9DSCfTTpkNhU7AQ7jGzd4KWvgc67EDbKYH6eclOO9BmSqBsUU+HTcFCwJcdaCVo6Vyy7LZfCJuChbAfONCdoKUTKHsw6iE2FDYWFIqFthxoLImLSZsr3fqzScZ9isUyczWZiXEC6UWoF2LaaHqcDcY4+mHmheRAMmBe8oje8nmqFOQvZwS9N2uxLEcgbUuzDdpGmZnyzLxzGG3yqm1lARxH2VZEUz6DChc6NXoia83I087pRukZyozAjqCHvv6Cf0GL6Ao655MrgNr6TX1bDqF1qO/Xcv7qobymJoA+6xpxfvTd7VVqdxcw7au1h3IwbUfn0DJ6hb6ibbSJVtzX8w9B30JVWQf/QqibVQZYm7drpg5C7TmzuZnSI6JZ2yWoAnKo61UY/5f3Dy7dC4CdAEhQAAAAAElFTkSuQmCC);
+      background-repeat: no-repeat;
+      background-size: cover;
+      text-indent: -9999px;
+    }
+
+    .mod_search_bar .icon_delete {
+
+      position: absolute;
+      display: none;
+      top: 9px;
+      right: 11px;
+      height: 18px;
+      width: 18px;
+      background-color: #b1b1b1;
+      text-indent: -9999px;
+      -webkit-border-radius: 99px;
+      -moz-border-radius: 99px;
+      border-radius: 99px;
+    }
+     .mod_search_bar .icon_delete:before ,
+     .mod_search_bar .icon_delete:after {
+      
+      content: '';
+      display: block; 
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      background-color: #fff;
+      -webkit-border-radius: 8px;
+      -moz-border-radius: 8px;
+      border-radius: 8px;
+     }
+
+    .mod_search_bar .icon_delete:before {
+      width: 10px;
+      height: 2px;
+      margin-left: -5px;
+      margin-top: -1px;
+      transform: rotate(45deg);
+    }
+
+    .mod_search_bar .icon_delete:after {
+      width: 10px;
+      height: 2px;
+      margin-left: -5px;
+      margin-top: -1px;
+      transform: rotate(-45deg);
+    }
+
+
+  </style>
+</head>
+
+
+
+<body class="search_page">
+  <div class="wrap">
+    <header class="mod_header">
+      <i class="music_logo">QQ音乐</i>
+      <a href="javascript:;" class="btn_download">下载app</a>
+    </header>
+    <nav class="mod_nav search_current">
+      <a href="javascript:;" data-nav="recom" class="current">推荐</a>
+      <a href="javascript:;" data-nav="toplist">排行榜</a>
+      <a href="javascript:;" data-nav="search">搜索</a>
+    </nav>
+    <div class="content-wrapper">
+      <div id="search_wrap" class="search_box current_page loaded">
+        <div class="mod_search_bar">
+          <div class="search_bar_cont" id="input_wrapper">
+            <form action="#" method="get" id="search_form">
+               <input type="search" id="search_input" class="search_input" 
+               autocomplete="off" placeholder="搜索歌曲 歌单 专辑">
+               <span class="icon icon_search">搜索</span>
+               <span id="del_btn" class="icon icon_delete">删除</span>
+            </form>
+          </div>
+          <div id="cancel_btn" class="search_bar_tip_text">取消</div>
+        </div>
+      </div>
+    </div>
+    <!--<div class="scroll"></div>-->
+  </div>
+  <script>
+    const dlURL = {
+      'andriod': 'http://imtt.dd.qq.com/16891/BBD3615D20585464354A6D1A31F82D2B.apk?fsname=com.tencent.qqmusic_7.2.0.16_605.apk&csr=1bbd',
+      'ios': 'itms-apps://itunes.apple.com/cn/app/qq-yin-le/id414603431?mt=8'
+    }
+    var u = navigator.userAgent;
+    var isAndroid = u.indexOf('Android') > -1 || u.indexOf('Adr') > -1; //android终端
+    var isiOS = !u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/); //ios终端
+    // alert('是否是Android：' + isAndroid);
+    // alert('是否是iOS：' + isiOS);
+
+    var u = navigator.userAgent;
+    var isAndroid = u.indexOf('Android') > -1 || u.indexOf('Adr') > -1; //android终端
+    var isiOS = !u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/); //ios终端
+    // alert('是否是Android：' + isAndroid);
+    // alert('是否是iOS：' + isiOS);
+
+    function ismobile(test) {
+      var u = navigator.userAgent, app = navigator.appVersion;
+      if (/AppleWebKit.*Mobile/i.test(navigator.userAgent) || (/MIDP|SymbianOS|NOKIA|SAMSUNG|LG|NEC|TCL|Alcatel|BIRD|DBTEL|Dopod|PHILIPS|HAIER|LENOVO|MOT-|Nokia|SonyEricsson|SIE-|Amoi|ZTE/.test(navigator.userAgent))) {
+        if (window.location.href.indexOf("?mobile") < 0) {
+          try {
+            if (/iPhone|mac|iPod|iPad/i.test(navigator.userAgent)) {
+              return '0';
+            } else {
+              return '1';
+            }
+          } catch (e) { }
+        }
+      } else if (u.indexOf('iPad') > -1) {
+        return '0';
+      } else {
+        return '1';
+      }
+    };
+
+    // alert(ismobile());
+
+    window.onload = function () {
+      document.querySelector('.btn_download')
+        .addEventListener('click', function () {
+          let isIPhone = ismobile() == 0 ? true : false;
+          if (isIPhone) {
+            window.location.href = dlURL.ios;
+          } else {
+            window.location.href = dlURL.andriod;
+          }
+        })
+
+      document.querySelectorAll('.mod_nav a').forEach(function(item){
+        item.addEventListener('click',function(){
+          let itemName = this.dataset.nav;
+          if(!this.classList.contains('current')) {
+            document.querySelector('.mod_nav a.current').classList.remove('current');
+            this.classList.add('current');
+             document.querySelector('.mod_nav').className = `mod_nav ${itemName}_current`;
+          }
+          
+         
+          
+          
+
+          // document.querySelector('.scroll')
+        },false)
+      })
+
+      
+
+//    表单提交细节
+      const oForm = document.getElementById('search_form');
+      const oSearchInput = document.getElementById('search_input');
+      const oCancelBtn = document.getElementById('cancel_btn');
+      const oDelBtn = document.getElementById('del_btn');
+      document.querySelector('.icon_search')
+        .addEventListener('click',function() {
+          // span 不具有表单提交的能力
+          let keyword = oSearchInput.value.trim();
+          if(keyword) {
+
+            oForm.submit();
+          } else {
+            oSearchInput.focus();
+          }
+
+          
+          // 如何利用span元素提交表单
+          //oForm.submit()被调用 就可以手动提交表单
+          //method = GET | POST
+          // ? 代表 querystring
+          // 表单送给哪个url处理
+          // #action 动作脚本 后台地址
+          // 送span比input、button更好，这样给表单的校验更自然
+          // submit 马上触发onSubmit 需要preventDefault();
+         
+
+        })
+        oCancelBtn.addEventListener('click',function(){
+          oSearchInput.value = '';
+          this.style.display = 'nvv j .                                                    one';
+        })
+
+        oSearchInput.addEventListener('focus',function(){
+          oCancelBtn.style.display = 'block';
+        })
+
+        oSearchInput.addEventListener('input',function(){
+          let keyword = this.value.trim();
+          if(keyword) {
+            oDelBtn.style.display = 'inline';
+          }
+        })
+
+
+    }
+  </script>
+
+</body>
+
+</html>
